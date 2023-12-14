@@ -7,35 +7,48 @@ export async function fight(firstFighter, secondFighter) {
         let lastCriticalHitTime = Date.now();
 
         const updateHealthBar = (fighter, health) => {
-            // Actualiza la barra de salud del luchador en la interfaz de usuario
+            console.log('Objeto fighter:', fighter);
+            console.log(`Buscando barra de salud para ID: ${fighter._id}-health`);
+            const healthBar = document.getElementById(`${fighter._id}-health`);
+            if (healthBar) {
+                const newWidth = (health / fighter.health) * 100;
+                console.log(`Nueva anchura de la barra de salud: ${newWidth}%`);
+                healthBar.style.width = `${newWidth}%`;
+            } else {
+                console.log(`No se encontró la barra de salud para: ${fighter._id}`);
+            }
         };
-
+        
+        
         const handleAttack = (attacker, defender, defenderHealth) => {
-            const isCriticalHit = Date.now() - lastCriticalHitTime > 10000; // 10 segundos de enfriamiento
+            const isCriticalHit = Date.now() - lastCriticalHitTime > 10000;
             const damage = isCriticalHit ? 2 * attacker.attack : getDamage(attacker, defender);
             if (isCriticalHit) lastCriticalHitTime = Date.now();
 
             return Math.max(defenderHealth - damage, 0);
         };
 
-        document.addEventListener('keydown', (event) => {
+        const onKeyPress = (event) => {
             if (event.key === controls.PlayerOneAttack) {
                 secondFighterHealth = handleAttack(firstFighter, secondFighter, secondFighterHealth);
                 updateHealthBar(secondFighter, secondFighterHealth);
+                console.log("Hola")
             } else if (event.key === controls.PlayerTwoAttack) {
                 firstFighterHealth = handleAttack(secondFighter, firstFighter, firstFighterHealth);
                 updateHealthBar(firstFighter, firstFighterHealth);
             }
-            // Implementar lógica para bloqueos aquí
 
-            if (firstFighterHealth <= 0) {
-                document.removeEventListener('keydown', this);
-                resolve(secondFighter);
-            } else if (secondFighterHealth <= 0) {
-                document.removeEventListener('keydown', this);
-                resolve(firstFighter);
+            if (firstFighterHealth <= 0 || secondFighterHealth <= 0) {
+                document.removeEventListener('keydown', onKeyPress);
+                resolve(firstFighterHealth <= 0 ? secondFighter : firstFighter);
             }
+        };
+
+        document.addEventListener('keydown', onKeyPress);
+        document.addEventListener('keydown', (event) => {
+            console.log(`Tecla presionada: ${event.key}`);
         });
+        
     });
 }
 

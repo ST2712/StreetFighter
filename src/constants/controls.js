@@ -1,10 +1,10 @@
 const controls = {
-    PlayerOneAttack: 'KeyA',
-    PlayerOneBlock: 'KeyD',
-    PlayerTwoAttack: 'KeyJ',
-    PlayerTwoBlock: 'KeyL',
-    PlayerOneCriticalHitCombination: ['KeyQ', 'KeyW', 'KeyE'],
-    PlayerTwoCriticalHitCombination: ['KeyU', 'KeyI', 'KeyO']
+    PlayerOneAttack: 'A',
+    PlayerOneBlock: 'D',
+    PlayerTwoAttack: 'J',
+    PlayerTwoBlock: 'L',
+    PlayerOneCriticalHitCombination: ['Q', 'W', 'E'],
+    PlayerTwoCriticalHitCombination: ['U', 'I', 'O']
 };
 
 export default controls;
