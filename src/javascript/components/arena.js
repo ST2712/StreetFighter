@@ -1,5 +1,6 @@
 import createElement from '../helpers/domHelper';
 import { createFighterImage } from './fighterPreview';
+import { fight } from './fight';
 
 function createFighter(fighter, position) {
     const imgElement = createFighterImage(fighter);

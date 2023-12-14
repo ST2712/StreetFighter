@@ -4,24 +4,38 @@ export async function fight(firstFighter, secondFighter) {
     return new Promise(resolve => {
         let firstFighterHealth = firstFighter.health;
         let secondFighterHealth = secondFighter.health;
+        let lastCriticalHitTime = Date.now();
 
-        const attackInterval = 1000;
+        const updateHealthBar = (fighter, health) => {
+            // Actualiza la barra de salud del luchador en la interfaz de usuario
+        };
 
-        const fightInterval = setInterval(() => {
-            const damageToSecond = getDamage(firstFighter, secondFighter);
-            secondFighterHealth -= damageToSecond;
+        const handleAttack = (attacker, defender, defenderHealth) => {
+            const isCriticalHit = Date.now() - lastCriticalHitTime > 10000; // 10 segundos de enfriamiento
+            const damage = isCriticalHit ? 2 * attacker.attack : getDamage(attacker, defender);
+            if (isCriticalHit) lastCriticalHitTime = Date.now();
 
-            const damageToFirst = getDamage(secondFighter, firstFighter);
-            firstFighterHealth -= damageToFirst;
+            return Math.max(defenderHealth - damage, 0);
+        };
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === controls.PlayerOneAttack) {
+                secondFighterHealth = handleAttack(firstFighter, secondFighter, secondFighterHealth);
+                updateHealthBar(secondFighter, secondFighterHealth);
+            } else if (event.key === controls.PlayerTwoAttack) {
+                firstFighterHealth = handleAttack(secondFighter, firstFighter, firstFighterHealth);
+                updateHealthBar(firstFighter, firstFighterHealth);
+            }
+            // Implementar lógica para bloqueos aquí
 
             if (firstFighterHealth <= 0) {
-                clearInterval(fightInterval);
+                document.removeEventListener('keydown', this);
                 resolve(secondFighter);
             } else if (secondFighterHealth <= 0) {
-                clearInterval(fightInterval);
+                document.removeEventListener('keydown', this);
                 resolve(firstFighter);
             }
-        }, attackInterval);
+        });
     });
 }
 
