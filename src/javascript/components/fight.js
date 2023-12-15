@@ -6,13 +6,20 @@ export async function fight(firstFighter, secondFighter) {
         let secondFighterHealth = secondFighter.health;
         let lastCriticalHitTime = Date.now();
 
-        const updateHealthBar = (fighter, health) => {
-            console.log('Objeto fighter:', fighter);
-            console.log(`Buscando barra de salud para ID: ${fighter._id}-health`);
-            const healthBar = document.getElementById(`${fighter._id}-health`);
+        const updateHealthBarRight = (fighter, health) => {
+            const healthBar = document.getElementById('right-fighter-indicator');
             if (healthBar) {
                 const newWidth = (health / fighter.health) * 100;
-                console.log(`Nueva anchura de la barra de salud: ${newWidth}%`);
+                healthBar.style.width = `${newWidth}%`;
+            } else {
+                console.log(`No se encontró la barra de salud para: ${fighter._id}`);
+            }
+        };
+
+        const updateHealthBarLeft = (fighter, health) => {
+            const healthBar = document.getElementById('left-fighter-indicator');
+            if (healthBar) {
+                const newWidth = (health / fighter.health) * 100;
                 healthBar.style.width = `${newWidth}%`;
             } else {
                 console.log(`No se encontró la barra de salud para: ${fighter._id}`);
@@ -31,11 +38,10 @@ export async function fight(firstFighter, secondFighter) {
         const onKeyPress = (event) => {
             if (event.key === controls.PlayerOneAttack) {
                 secondFighterHealth = handleAttack(firstFighter, secondFighter, secondFighterHealth);
-                updateHealthBar(secondFighter, secondFighterHealth);
-                console.log("Hola")
+                updateHealthBarRight(secondFighter, secondFighterHealth);
             } else if (event.key === controls.PlayerTwoAttack) {
                 firstFighterHealth = handleAttack(secondFighter, firstFighter, firstFighterHealth);
-                updateHealthBar(firstFighter, firstFighterHealth);
+                updateHealthBarLeft(firstFighter, firstFighterHealth);
             }
 
             if (firstFighterHealth <= 0 || secondFighterHealth <= 0) {
@@ -45,9 +51,6 @@ export async function fight(firstFighter, secondFighter) {
         };
 
         document.addEventListener('keydown', onKeyPress);
-        document.addEventListener('keydown', (event) => {
-            console.log(`Tecla presionada: ${event.key}`);
-        });
         
     });
 }
