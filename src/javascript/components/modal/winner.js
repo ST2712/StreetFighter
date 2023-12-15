@@ -12,7 +12,7 @@ export default function showWinnerModal(fighter) {
     // Crear y añadir la imagen del ganador
     const fighterImage = createElement({
         tagName: 'img',
-        attributes: { src: fighter.source } // Asegúrate de que 'fighter.image' contiene la URL de la imagen
+        attributes: { src: '../../../../resources/trophy.jpg' } // Asegúrate de que 'fighter.image' contiene la URL de la imagen
     });
     fighterImage.style.maxWidth = '100%'; // Opcional: Establecer un ancho máximo para la imagen
 

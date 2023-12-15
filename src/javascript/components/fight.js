@@ -5,6 +5,8 @@ export async function fight(firstFighter, secondFighter) {
         let firstFighterHealth = firstFighter.health;
         let secondFighterHealth = secondFighter.health;
         let lastCriticalHitTime = Date.now();
+        let firstFighterBlocking = false; // Estado de bloqueo para el primer luchador
+        let secondFighterBlocking = false; // Estado de bloqueo para el segundo luchador
 
         const updateHealthBarRight = (fighter, health) => {
             const healthBar = document.getElementById('right-fighter-indicator');
@@ -25,23 +27,37 @@ export async function fight(firstFighter, secondFighter) {
                 console.log(`No se encontró la barra de salud para: ${fighter._id}`);
             }
         };
-        
-        
-        const handleAttack = (attacker, defender, defenderHealth) => {
-            const isCriticalHit = Date.now() - lastCriticalHitTime > 10000;
-            const damage = isCriticalHit ? 2 * attacker.attack : getDamage(attacker, defender);
-            if (isCriticalHit) lastCriticalHitTime = Date.now();
 
+        const isCriticalHit = () => {
+            const now = Date.now();
+            if (now - lastCriticalHitTime > 10000) {
+                lastCriticalHitTime = now;
+                return true;
+            }
+            return false;
+        };
+        
+        
+        const handleAttack = (attacker, defender, defenderHealth, defenderBlocking) => {
+            const criticalHit = isCriticalHit();
+            if (defenderBlocking && !criticalHit) {
+                return defenderHealth;
+            }
+            const damage = criticalHit ? 2 * attacker.attack : getDamage(attacker, defender);
             return Math.max(defenderHealth - damage, 0);
         };
 
         const onKeyPress = (event) => {
-            if (event.key === controls.PlayerOneAttack) {
-                secondFighterHealth = handleAttack(firstFighter, secondFighter, secondFighterHealth);
+            if (event.key === controls.PlayerOneAttack && !firstFighterBlocking) {
+                secondFighterHealth = handleAttack(firstFighter, secondFighter, secondFighterHealth, secondFighterBlocking);
                 updateHealthBarRight(secondFighter, secondFighterHealth);
-            } else if (event.key === controls.PlayerTwoAttack) {
-                firstFighterHealth = handleAttack(secondFighter, firstFighter, firstFighterHealth);
+            } else if (event.key === controls.PlayerTwoAttack && !secondFighterBlocking) {
+                firstFighterHealth = handleAttack(secondFighter, firstFighter, firstFighterHealth, firstFighterBlocking);
                 updateHealthBarLeft(firstFighter, firstFighterHealth);
+            } else if (event.key === controls.PlayerOneBlock) {
+                firstFighterBlocking = !firstFighterBlocking;
+            } else if (event.key === controls.PlayerTwoBlock) {
+                secondFighterBlocking = !secondFighterBlocking;
             }
 
             if (firstFighterHealth <= 0 || secondFighterHealth <= 0) {
